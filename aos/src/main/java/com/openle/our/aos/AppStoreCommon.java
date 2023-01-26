@@ -12,7 +12,7 @@ public class AppStoreCommon {
             var intent = genPlayStoreAppDetailIntent(BuildConfig.APPLICATION_ID);
             var cr = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(v.getContext());
             if (cr != ConnectionResult.SUCCESS) {
-                intent.setPackage(null);
+            intent.setPackage(null);    //  清除PlayStore应用包名则降级至浏览器打开
             }
             startActivity(intent);
     */
@@ -22,7 +22,7 @@ public class AppStoreCommon {
         intent.setPackage("com.android.vending");
         if (intent.resolveActivity(context.getPackageManager()) == null) {
             Toast.makeText(context, "未安装Google Play则通过浏览器打开！", Toast.LENGTH_LONG).show();
-            intent.setPackage(null);
+            intent.setPackage(null);    //  清除PlayStore应用包名则降级至浏览器打开
         }
         return intent;  //  未登录则跳转至登录页
     }
