@@ -7,10 +7,10 @@ group 'com.openle.module'
 
 android {
     namespace 'com.openle.our.aos'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
-        minSdk 26
+        minSdk 28
         //noinspection ExpiredTargetSdkVersion
         targetSdk 28
 
@@ -24,8 +24,18 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_17 //  VERSION_11
+        targetCompatibility JavaVersion.VERSION_17 // JDK17时必须存在targetCompatibility项
+    }
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
+        singleVariant("debug") {
+            withSourcesJar()
+            withJavadocJar()
+        }
     }
 }
 
@@ -41,7 +51,7 @@ afterEvaluate { //  不包裹则报找不到components.release
                 credentials { // 若配了credentials.username则可去掉artifactregistry插件，将协议改为“https://...”即可。
                     //  编码key.json内容为base64后username改用_json_key_base64
                     username = "_json_key"
-                    password = file('../../project-161922-8ad030ce3d3e.json').text
+                    password = file('../../../../docs/cloud/project-161922-8ad030ce3d3e.json').text
                 }
                 authentication { basic(BasicAuthentication) }
             }

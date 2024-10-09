@@ -14,20 +14,21 @@ public class AppCommon {
             //  PackageManager.GET_CONFIGURATIONS 缩小了包信息的字段量，仅包含Version等基本信息
             info = context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_CONFIGURATIONS);
         } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
         }
-        return info.versionCode;
-        //return info.getLongVersionCode();   //  28+
+        //return info.versionCode;  //  < 28
+        return info != null ? info.getLongVersionCode() : 0;
     }
 
+    //  Godot 项目则可换用 ProjectSettings.GetSetting("application/config/version");
     public static String versionName(Context context) {
         PackageInfo info = null;
         try {
             info = context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_CONFIGURATIONS);
         } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
         }
-        return info.versionName;
+        return info != null ? info.versionName : null;
     }
 
     public static String appName(Context context) {
@@ -37,7 +38,7 @@ public class AppCommon {
                             context.getPackageName(), PackageManager.GET_CONFIGURATIONS).applicationInfo
                     .loadLabel(context.getPackageManager()).toString();
         } catch (PackageManager.NameNotFoundException e) {
-            System.out.println(e);
+            e.printStackTrace(System.err);
         }
         return appName;
     }

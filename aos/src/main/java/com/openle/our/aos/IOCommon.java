@@ -4,7 +4,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.OpenableColumns;
-import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -20,39 +19,46 @@ public class IOCommon {
                 OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE
         }, null, null, null);
 
-        int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
-        //int sizeIndex = returnCursor.getColumnIndex(OpenableColumns.SIZE);
-        returnCursor.moveToFirst();
-        String name = (returnCursor.getString(nameIndex));
-        //String size = (Long.toString(returnCursor.getLong(sizeIndex)));
+        if (returnCursor != null) {
+            int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+            //int sizeIndex = returnCursor.getColumnIndex(OpenableColumns.SIZE);
+            returnCursor.moveToFirst();
+            String name = (returnCursor.getString(nameIndex));
+            //String size = (Long.toString(returnCursor.getLong(sizeIndex)));
+            returnCursor.close();
 
-        File output;
-        if (!newDirName.equals("")) {
-            File dir = new File(mContext.getFilesDir() + "/" + newDirName);
-            if (!dir.exists()) {
-                dir.mkdir();
+            File output;
+            if (!newDirName.isEmpty()) {
+                File dir = new File(mContext.getFilesDir() + "/" + newDirName);
+                if (!dir.exists()) {
+                    System.out.println(dir.mkdir());
+                }
+                output = new File(mContext.getFilesDir() + "/" + newDirName + "/" + name);
+            } else {
+                output = new File(mContext.getFilesDir() + "/" + name);
             }
-            output = new File(mContext.getFilesDir() + "/" + newDirName + "/" + name);
-        } else {
-            output = new File(mContext.getFilesDir() + "/" + name);
-        }
-        try {
-            InputStream inputStream = mContext.getContentResolver().openInputStream(uri);
-            FileOutputStream outputStream = new FileOutputStream(output);
-            int read = 0;
-            int bufferSize = 1024;
-            final byte[] buffers = new byte[bufferSize];
-            while ((read = inputStream.read(buffers)) != -1) {
-                outputStream.write(buffers, 0, read);
+            try {
+
+                InputStream inputStream = mContext.getContentResolver().openInputStream(uri);
+                if (inputStream != null) {
+                    FileOutputStream outputStream = new FileOutputStream(output);
+
+                    int read = 0;
+                    int bufferSize = 1024;
+                    final byte[] buffers = new byte[bufferSize];
+                    while ((read = inputStream.read(buffers)) != -1) {
+                        outputStream.write(buffers, 0, read);
+                    }
+
+                    inputStream.close();
+                    outputStream.close();
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace(System.err);
             }
-
-            inputStream.close();
-            outputStream.close();
-
-        } catch (Exception e) {
-            Log.e("Exception", e.getMessage());
+            return output.getPath();
         }
-
-        return output.getPath();
+        return null;
     }
 }
